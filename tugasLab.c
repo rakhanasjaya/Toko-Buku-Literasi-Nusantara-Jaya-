@@ -274,11 +274,6 @@ int viewBuku(void)
     return jumlahBuku;
 }
 
-// TODO: Anggota selanjutnya
-void viewHistory(void) { printf("[TODO ] Menu 2 View History\n"); }
-void deleteHistory(void) { printf("[TODO ] Menu 4 Delete History\n"); }
-void inputTransaksi(void) { printf("[TODO ] Menu 7 Input Transaksi\n"); }
-
 /* Menu 5: menampilkan daftar buku, meminta index, lalu menghapus buku tersebut.
  * History yang memakai kode buku ini tetap disimpan sebagai catatan penjualan. */
 void deleteBuku(void)
@@ -380,6 +375,123 @@ void menuSort(void)
     printf("Data buku berhasil diurutkan.\n");
     viewBuku();
 }
+
+void viewHistory(void)
+{
+    if (jumlahHistory == 0)
+    {
+        printf("\nBelum ada riwayat transaksi.\n");
+        return;
+    }
+
+    printf("\n========== HISTORY TRANSAKSI ==========\n");
+    printf("%-4s %-10s %-15s %-15s\n",
+           "No", "Kode Buku", "Jumlah Terjual", "Total Harga");
+
+    for (int i = 0; i < jumlahHistory; i++)
+    {
+        printf("%-4d %-10s %-15d Rp %-12.2f\n",
+               i + 1,
+               daftarHistory[i].kode,
+               daftarHistory[i].jumlah,
+               daftarHistory[i].total);
+    }
+
+    printf("========================================\n");
+}
+
+void deleteHistory(void)
+{
+    if (jumlahHistory == 0)
+    {
+        printf("\nBelum ada riwayat transaksi yang bisa dihapus.\n");
+        return;
+    }
+
+    printf("\n========== DAFTAR HISTORY ==========\n");
+    printf("%-4s %-10s %-15s %-15s\n",
+           "No", "Kode Buku", "Jumlah Terjual", "Total Harga");
+
+    for (int i = 0; i < jumlahHistory; i++)
+    {
+        printf("%-4d %-10s %-15d Rp %-12.2f\n",
+               i + 1,
+               daftarHistory[i].kode,
+               daftarHistory[i].jumlah,
+               daftarHistory[i].total);
+    }
+
+    printf("====================================\n");
+
+    int index = inputIndex(jumlahHistory);
+
+    for (int i = index - 1; i < jumlahHistory - 1; i++)
+    {
+        daftarHistory[i] = daftarHistory[i + 1];
+    }
+
+    jumlahHistory--;
+
+    printf("Data history berhasil dihapus.\n");
+}
+void inputTransaksi(void)
+{
+    if (jumlahBuku == 0)
+    {
+        printf("\nBelum ada data buku. Silakan input buku terlebih dahulu.\n");
+        return;
+    }
+
+    if (jumlahHistory >= MAX_HISTORY)
+    {
+        printf("\nData history sudah penuh.\n");
+        return;
+    }
+
+    char kode[LEN_KODE];
+    int jumlah;
+    int indexBuku;
+
+    printf("\n========== INPUT TRANSAKSI ==========\n");
+
+    bacaBaris("Kode buku    : ", kode, sizeof(kode));
+
+    indexBuku = cariBuku(kode);
+
+    if (indexBuku == -1)
+    {
+        printf("Kode buku tidak ditemukan.\n");
+        return;
+    }
+
+    do
+    {
+        if (!bacaInt("Jumlah terjual: ", &jumlah) || jumlah <= 0)
+        {
+            printf("Jumlah terjual harus berupa angka lebih dari 0.\n");
+            jumlah = 0;
+        }
+    } while (jumlah <= 0);
+
+    History h;
+
+    strcpy(h.kode, daftarBuku[indexBuku].kode);
+    h.jumlah = jumlah;
+    h.total = jumlah * daftarBuku[indexBuku].harga;
+
+    daftarHistory[jumlahHistory++] = h;
+
+    printf("\n========== DETAIL TRANSAKSI ==========\n");
+    printf("Kode buku     : %s\n", daftarBuku[indexBuku].kode);
+    printf("Nama buku     : %s\n", daftarBuku[indexBuku].nama);
+    printf("Harga satuan  : Rp %.2f\n", daftarBuku[indexBuku].harga);
+    printf("Jumlah terjual: %d\n", h.jumlah);
+    printf("Total harga   : Rp %.2f\n", h.total);
+    printf("Transaksi berhasil dicatat.\n");
+}
+
+void deleteBuku(void) { printf("[TODO ] Menu 5 Delete Buku\n"); }
+void menuSort(void) { printf("[TODO ] Menu 8 Sort Buku\n"); }
 
 /* Menampilkan menu utama. */
 static void tampilMenu(void)
