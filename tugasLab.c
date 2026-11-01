@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 /* ====================== KONTRAK TIM ====================== */
 #define MAX_BUKU 100
@@ -277,8 +278,108 @@ int viewBuku(void)
 void viewHistory(void) { printf("[TODO ] Menu 2 View History\n"); }
 void deleteHistory(void) { printf("[TODO ] Menu 4 Delete History\n"); }
 void inputTransaksi(void) { printf("[TODO ] Menu 7 Input Transaksi\n"); }
-void deleteBuku(void) { printf("[TODO ] Menu 5 Delete Buku\n"); }
-void menuSort(void) { printf("[TODO ] Menu 8 Sort Buku\n"); }
+
+/* Menu 5: menampilkan daftar buku, meminta index, lalu menghapus buku tersebut.
+ * History yang memakai kode buku ini tetap disimpan sebagai catatan penjualan. */
+void deleteBuku(void)
+{
+    if (viewBuku() == 0)
+        return;
+
+    int idx = inputIndex(jumlahBuku) - 1;
+    for (int i = idx; i < jumlahBuku - 1; i++)
+    {
+        daftarBuku[i] = daftarBuku[i + 1];
+    }
+    jumlahBuku--;
+    printf("Data Successfully delete..\n");
+}
+
+/* Membandingkan dua string tanpa membedakan huruf besar/kecil. */
+int bandingTeks(const char *a, const char *b)
+{
+    while (*a && *b)
+    {
+        int ca = tolower((unsigned char)*a);
+        int cb = tolower((unsigned char)*b);
+        if (ca != cb)
+            return ca - cb;
+        a++;
+        b++;
+    }
+    return tolower((unsigned char)*a) - tolower((unsigned char)*b);
+}
+
+/* Membandingkan dua buku sesuai field. Hasil < 0 jika a di depan b, > 0 jika sebaliknya. */
+int bandingBuku(const Buku *a, const Buku *b, int field)
+{
+    switch (field)
+    {
+    case 1:
+        return strcmp(a->kode, b->kode);
+    case 2:
+        return bandingTeks(a->nama, b->nama);
+    case 3:
+        return bandingTeks(a->jenis, b->jenis);
+    default:
+        if (a->harga < b->harga)
+            return -1;
+        if (a->harga > b->harga)
+            return 1;
+        return 0;
+    }
+}
+
+/* Bubble sort pada daftarBuku. urutan 1 = ascending, 2 = descending.
+ * Berhenti lebih awal jika dalam satu putaran tidak ada pertukaran. */
+void bubbleSortBuku(int field, int urutan)
+{
+    for (int i = 0; i < jumlahBuku - 1; i++)
+    {
+        int tukar = 0;
+        for (int j = 0; j < jumlahBuku - 1 - i; j++)
+        {
+            int hasil = bandingBuku(&daftarBuku[j], &daftarBuku[j + 1], field);
+            if ((urutan == 1 && hasil > 0) || (urutan == 2 && hasil < 0))
+            {
+                Buku temp = daftarBuku[j];
+                daftarBuku[j] = daftarBuku[j + 1];
+                daftarBuku[j + 1] = temp;
+                tukar = 1;
+            }
+        }
+        if (!tukar)
+            break;
+    }
+}
+
+/* Menu 8: memilih field dan urutan, mengurutkan daftar buku, lalu menampilkannya. */
+void menuSort(void)
+{
+    int field, urutan;
+
+    if (jumlahBuku == 0)
+    {
+        printf("Data buku belum ada.\n");
+        return;
+    }
+
+    printf("\nSort berdasarkan:\n1. Kode\n2. Nama\n3. Jenis\n4. Harga\n");
+    while (!bacaInt("Pilihan (1-4): ", &field) || field < 1 || field > 4)
+    {
+        printf("Input tidak valid.\n");
+    }
+
+    printf("\nUrutan:\n1. Ascending (A-Z / termurah)\n2. Descending (Z-A / termahal)\n");
+    while (!bacaInt("Pilihan (1-2): ", &urutan) || urutan < 1 || urutan > 2)
+    {
+        printf("Input tidak valid.\n");
+    }
+
+    bubbleSortBuku(field, urutan);
+    printf("Data buku berhasil diurutkan.\n");
+    viewBuku();
+}
 
 /* Menampilkan menu utama. */
 static void tampilMenu(void)
