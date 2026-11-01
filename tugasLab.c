@@ -434,6 +434,7 @@ void deleteHistory(void)
 
     printf("Data history berhasil dihapus.\n");
 }
+
 void inputTransaksi(void)
 {
     if (jumlahBuku == 0)
@@ -489,9 +490,6 @@ void inputTransaksi(void)
     printf("Total harga   : Rp %.2f\n", h.total);
     printf("Transaksi berhasil dicatat.\n");
 }
-
-void deleteBuku(void) { printf("[TODO ] Menu 5 Delete Buku\n"); }
-void menuSort(void) { printf("[TODO ] Menu 8 Sort Buku\n"); }
 
 /* Menampilkan menu utama. */
 static void tampilMenu(void)
