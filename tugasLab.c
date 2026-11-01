@@ -1,10 +1,19 @@
 /*
- * Toko Buku "Literasi Nusantara Jaya"
+ * toko buku "literasi nusantara jaya"
  *
- *   - Bagian atas (struct dan variabel global) adalah kontrak tim.
- *   - Format databuku.txt : kode|nama|jenis|harga
- *   - Format history.txt  : kode|jumlah|total
+ * anggota kelompok:
+ *   - Muhammad Rakha Nasjaya    - 3002929683
+ *   - Dicky Mario Lumbantobing  - 3002920280
+ *   - Kevin Rafi Pranaja        - 3002920210
+ *   - Jeremy Vahardika Jaya     - 3002913956
+ *   - Ajie Ahmad Fathi Fauzi    - 3002921144
+ *
+ * catatan:
+ *   - bagian atas (struct dan variabel global) adalah kontrak tim.
+ *   - format databuku.txt : kode|nama|jenis|harga
+ *   - format history.txt  : kode|jumlah|total
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -219,7 +228,7 @@ int cariBuku(const char *kode)
 {
     for (int i = 0; i < jumlahBuku; i++)
     {
-        if (strcmp(daftarBuku[i].kode, kode) == 0)
+        if (bandingTeks(daftarBuku[i].kode, kode) == 0)
             return i;
     }
     return -1;
@@ -376,6 +385,8 @@ void menuSort(void)
     viewBuku();
 }
 
+/* Menu 2: menampilkan seluruh histori transaksi penjualan dari array daftarHistory.
+ * Jika belum ada transaksi, tampilkan pesan dan kembali ke menu. */
 void viewHistory(void)
 {
     if (jumlahHistory == 0)
@@ -400,6 +411,8 @@ void viewHistory(void)
     printf("========================================\n");
 }
 
+/* Menu 4: menampilkan daftar history, meminta index (divalidasi 1 sampai jumlahHistory),
+ * lalu menghapus data tersebut dengan menggeser elemen setelahnya ke depan. */
 void deleteHistory(void)
 {
     if (jumlahHistory == 0)
@@ -425,6 +438,7 @@ void deleteHistory(void)
 
     int index = inputIndex(jumlahHistory);
 
+    /* geser elemen ke kiri untuk menimpa data yang dihapus */
     for (int i = index - 1; i < jumlahHistory - 1; i++)
     {
         daftarHistory[i] = daftarHistory[i + 1];
@@ -435,6 +449,9 @@ void deleteHistory(void)
     printf("Data history berhasil dihapus.\n");
 }
 
+/* Menu 7: meminta kode buku dan jumlah terjual, mencari harga buku dari daftar,
+ * menghitung total = jumlah x harga, lalu menambahkannya ke daftarHistory.
+ * Data baru tersimpan ke history.txt saat Exit (saveData). */
 void inputTransaksi(void)
 {
     if (jumlahBuku == 0)
@@ -465,6 +482,7 @@ void inputTransaksi(void)
         return;
     }
 
+    /* ulangi sampai jumlah berupa angka lebih dari 0 */
     do
     {
         if (!bacaInt("Jumlah terjual: ", &jumlah) || jumlah <= 0)
